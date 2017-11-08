@@ -1,3 +1,4 @@
+from socket import *
 
 
 class ezServer(object):
@@ -7,10 +8,11 @@ class ezServer(object):
 
     def __init__(self):
         pass
-    def createServerSocket(self):
-        pass
-    def createServerSockets(self):
-        pass
+    def createServerSocket(self,addr):
+        serverSocket = socket(AF_INET, SOCK_STREAM)
+        serverSocket.bind(addr)
+        serverSocket.listen()
+        return serverSocket
     def createReacotr(self):
         pass
     def monitor(self):

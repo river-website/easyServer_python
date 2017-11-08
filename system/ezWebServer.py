@@ -9,8 +9,8 @@ class ezWebServer(object):
     def setData(self,data):
         self.data = data
     def start(self):
-        map(self.startOne(),self.data)
-    def startOne(self,data):
-        data['host']
+        map(self.startOne(),dict(self.data).keys(),dict(self.data).values())
+    def startOne(self,host,value):
+        pass
     def onMessage(self):
         pass
