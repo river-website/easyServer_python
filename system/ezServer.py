@@ -5,30 +5,34 @@ from reactor.ezReactor import *
 from connect.ezTCP import *
 
 class ezServer(object):
-    threadCount = 4
+    threadCount = 2
     reactor = None
     log = None
     hosts = list
     threads = list
     onMessage = None
+    reactors = dict()
     def __init__(self,serverData):
         self.hosts = serverData
     def start(self):
-        def createServerSocket(hots):
-            serverSocket = socket(AF_INET, SOCK_STREAM)
-            serverSocket.bind(hots)
-            serverSocket.listen()
-            return (hots,serverSocket)
+        def createServerSocket(data):
+            print(data)
+            host = data[0]
+            port = data[1]
+            s = socket(AF_INET, SOCK_STREAM)
+            s.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)  # 端口复用的关键点
+            s.bind((host, port))
+            s.listen()
+            return (host,port,s)
         def runOneThread():
             def addEvent(data):
-                react.addEvent(data[1],1,self.onAccpet)
-            print('thread start')
+                react.addEvent(data[2],EVENT_READ,self.onAccpet)
+            hosts = list(map(createServerSocket, self.hosts))
             react = ezReactor()
-            map(addEvent,self.hosts)
+            list(map(addEvent,hosts))
             react.loop()
 
-        print('server start')
-        self.hosts = map(createServerSocket,self.hosts)
+
         for i in range(self.threadCount):
             t = threading.Thread(target=runOneThread)
             # self.threads.append(t)
@@ -37,11 +41,12 @@ class ezServer(object):
 
     def monitor(self):
         pass
-    def onAccpet(self,socket):
-        clienctSocket = socket.accpet()
-        if(clienctSocket):
+    def onAccpet(self,s,args=None):
+        print('1')
+        clienctSocket = s.accept()
+        if clienctSocket:
             tcp = ezTCP(clienctSocket)
             tcp.onMessage = self.onMessage
-        pass
+
     def errorShow(self):
         pass

@@ -10,7 +10,6 @@ class easy(object):
         self.servers = servers
     def start(self):
         def back():
-            pass
             return
             if os.fork() > 0:
                 exit()
@@ -21,6 +20,7 @@ class easy(object):
             server.start()
 
         back()
+
         list(map(startOneServer, self.servers.items()))
         self.monitor()
     def monitor(self):

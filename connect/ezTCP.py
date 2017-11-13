@@ -1,13 +1,13 @@
 
 
 class ezTCP(object):
-    clientSocket = None
+    socket = None
     readBuffer = None
     writeBuffer = None
     onMessage = None
 
-    def __init__(self):
-        pass
+    def __init__(self,socket):
+        self.socket = socket
     def onRead(self):
         pass
     def onWrite(self):
