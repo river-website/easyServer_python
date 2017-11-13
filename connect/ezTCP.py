@@ -4,6 +4,7 @@ class ezTCP(object):
     clientSocket = None
     readBuffer = None
     writeBuffer = None
+    onMessage = None
 
     def __init__(self):
         pass

@@ -1,27 +1,35 @@
 import os
-import ezWebServer
+import time
+
+from system.ezWebServer import *
 
 class easy(object):
-    server = []
+    servers = dict()
 
-    def __init__(self):
-        pass
-    def addServer(self,server,serverData):
-        self.server.append({'server':server,'data':serverData})
+    def __init__(self,servers):
+        self.servers = servers
     def start(self):
-        self.back()
-        map(self.startOneServer(),self.server)
+        def back():
+            pass
+            return
+            if os.fork() > 0:
+                exit()
+        def startOneServer(data):
+            serverName = data[0]
+            serverData = data[1]
+            server = globals()[serverName](serverData)
+            server.start()
+
+        back()
+        list(map(startOneServer, self.servers.items()))
         self.monitor()
-    def startOneServer(self,server):
-        serv = server['server']()
-        serv.setData(server['data'])
-        serv.start()
-    def back(self):
-        if os.fork() > 0:
-            exit()
     def monitor(self):
+        while(True):
+            print('main')
+            time.sleep(10)
         pass
     def getPids(self):
+        print('cc')
         pass
     def setPids(self):
         pass
