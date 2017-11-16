@@ -3,8 +3,10 @@ import threading
 
 from reactor.ezReactor import *
 from connect.ezTCP import *
+from multiprocessing import cpu_count
 
 class ezServer(object):
+    processCount = 2
     threadCount = 2
     reactor = None
     log = None
@@ -14,6 +16,7 @@ class ezServer(object):
     reactors = dict()
     def __init__(self,serverData):
         self.hosts = serverData
+        self.processCount = cpu_count()
     def start(self):
         def createServerSocket(data):
             print(data)

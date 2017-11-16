@@ -1,24 +1,22 @@
-from threading import *
-from time import *
-import datetime
+from tornado.concurrent import run_on_executor
 
-sum = 500000000
-threadCount = 1
-time= 0
+from concurrent.futures import ThreadPoolExecutor
 
-def test():
-    print(datetime.datetime.now()-time)
-    c = int(sum/threadCount)
-    for i in range(c):
-        f = i*9+4-4
-    print(datetime.datetime.now()-time)
-    print(f)
+import time
 
-time = datetime.datetime.now()
-print('start')
-if threadCount>1:
-    for i in range(threadCount):
-        a = Thread(target=test)
-        a.start()
-else:
-    test()
+import tornado.ioloop
+import tornado.web
+
+class MainHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.write("Hello, world")
+        time.sleep(5)
+        self.write("done")
+
+application = tornado.web.Application([
+    (r"/", MainHandler),
+])
+
+if __name__ == "__main__":
+    application.listen(9999)
+    tornado.ioloop.IOLoop.instance().start()
