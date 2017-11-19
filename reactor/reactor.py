@@ -15,7 +15,7 @@ elif hasattr(selectors, 'PollSelector'):
 else:
     _ServerSelector = selectors.SelectSelector
 
-class ezReactor(object):
+class reactor(object):
     epoll = None
     allEvent = dict()
     def __init__(self):

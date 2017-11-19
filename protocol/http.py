@@ -1,6 +1,5 @@
 
-
-class ezHTTP(object):
+class http(object):
 
     def __del__(self):
         pass
