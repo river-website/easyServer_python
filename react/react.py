@@ -1,5 +1,5 @@
 import selectors
-import platform
+
 #     select.EPOLLIN    可读事件
 # 　　select.EPOLLOUT   可写事件
 # 　　select.EPOLLERR   错误事件
@@ -27,7 +27,7 @@ class reactor(object):
         self.epoll.register(fd,status)
         self.allEvent[status][fd.fileno()] = (func,args)
     def delEvent(self,fd,status):
-         del(self.allEvent[fd][status])
+         del(self.allEvent[status][fd.fileno()])
          self.epoll.unregister(fd)
     def loop(self):
         while True:

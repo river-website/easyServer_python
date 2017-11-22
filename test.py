@@ -1,12 +1,3 @@
-# reactor
-# queue
-# threadPool
-# processPool
-# connect   tcp
-# protocol  http
-# server
-
-
 from easy import *
 if __name__ == '__main__':
     # to easy

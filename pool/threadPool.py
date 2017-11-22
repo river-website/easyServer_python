@@ -15,36 +15,28 @@ class que(object):
                 return
     def notEmpty(self):
         if self.empty != None:
-            print('wait for not empty'+str(self.empty))
             self.empty.acquire()
-            print('have wait')
     def setEmpty(self):
         if self.empty != None:
             self.empty.acquire()
     def setNotEmpty(self):
         if self.empty != None:
-            print('setNotEmpty'+str(self.empty))
             self.empty.release()
-            print('setNotEmpty'+str(self.empty))
 
     def release(self):
         if self.mutex != None:
             self.mutex.release()
     def pop(self):
-        print('pop item')
         self.notEmpty()
-        print('now not empty,to get')
         self.acquire()
         ret = self.queue.pop()
         if self.queue.__len__():
-            print('set not empty')
             self.setNotEmpty()
         self.release()
         return ret
     def push(self,item):
         self.acquire()
         if not self.queue.__len__():
-            print('set not empty')
             self.setNotEmpty()
         self.queue.append(item)
         self.release()

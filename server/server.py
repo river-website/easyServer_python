@@ -1,14 +1,15 @@
 from socket import *
 
-from reactor.reactor import *
+from react.react import *
 from connect.tcpCon import *
 from multiprocessing import *
 
 class server(object):
-    reactor = None
+    react = None
     hosts = None
     onMessage = None
     onStart = None
+    protocol = None
     def __init__(self,hosts):
         self.hosts = hosts
     def createServerSocket(self,data):
@@ -29,9 +30,9 @@ class server(object):
         print('process run')
         self.hosts = list(map(self.createServerSocket, self.hosts))
         self.onStart()
-        self.reacot = reactor()
-        list(map(lambda d:self.reacot.addEvent(d[0],EVENT_READ,self.onAccpet),self.hosts))
-        self.reacot.loop()
+        self.react = reactor()
+        list(map(lambda d:self.react.addEvent(d[0],EVENT_READ,self.onAccpet),self.hosts))
+        self.react.loop()
 
     def monitor(self):
         pass
@@ -43,7 +44,9 @@ class server(object):
             clienctSocket.setblocking(False)
             tcp = tcpCon(clienctSocket)
             tcp.onMessage = self.onMessage
-            self.reacot.addEvent(clienctSocket,EVENT_READ,tcp.onRead)
+            tcp.protocol = self.protocol
+            tcp.server = self
+            self.react.addEvent(clienctSocket,EVENT_READ,tcp.onRead)
 
     def errorShow(self):
         pass

@@ -17,6 +17,7 @@ class webServer(object):
         return list(dict(serverData).keys())
     def onStart(self):
         self.protocol = http()
+        self.server.protocol = self.protocol
         self.tpool = threadPool(100)
     def start(self):
         self.server.onMessage = self.onMessage
