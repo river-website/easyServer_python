@@ -1,24 +1,33 @@
 from react.react import *
 
+# tcp连接类
 class tcpCon(object):
-    socket = None
+    # 客户端socket
+    clientSocket = None
+    # 读数据缓存
     readBuffer = ''
+    # 写数据缓存
     writeBuffer = ''
+    # 数据读完，回调函数
     onMessage = None
+    # 解密加密类
     protocol = None
-    len = 0
+    # 当前报文长度
+    currentLen = 0
+    # 服务类
     server = None
-    def __init__(self,socket):
-        self.socket = socket
+    def __init__(self,clientSocket):
+        self.clientSocket = clientSocket
+    # 数据到达
     def onRead(self,s,args=None):
-        buffer = self.socket.recv(8192)
+        buffer = self.clientSocket.recv(8192)
         if buffer:
             buffer = bytes.decode(buffer)
             if self.protocol:
-                if self.len:
-                    self.len = self.protocol.getInfo(self,buffer)
+                if self.currentLen:
+                    self.currentLen = self.protocol.getInfo(self,buffer)
                 self.readBuffer += buffer
-                if len(self.readBuffer) < self.len:
+                if len(self.readBuffer) < self.currentLen:
                     return
                 else:
                     dData = self.protocol.decode(self.readBuffer)
@@ -27,15 +36,16 @@ class tcpCon(object):
                 self.onMessage(self,buffer)
         else:
             self.close()
+    # 写准备好
     def onWrite(self):
         pass
+    # 发送数据
     def send(self,data):
         if self.protocol:
             data = self.protocol.encode(data)
-        self.socket.send(bytearray(data,'utf-8'))
-        self.close()
+        self.clientSocket.send(bytearray(data,'utf-8'))
+        # self.close()
+    # 关闭
     def close(self):
-        self.server.react.delEvent(self.socket, EVENT_READ)
-        self.socket.close()
-    def __del__(self):
-        pass
+        self.server.react.delEvent(self.clientSocket, EVENT_READ)
+        self.clientSocket.close()

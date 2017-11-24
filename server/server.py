@@ -4,14 +4,22 @@ from react.react import *
 from connect.tcpCon import *
 from multiprocessing import *
 
+# 服务类
 class server(object):
+    # reactor实体，每个进程一个
     react = None
+    # 监听的hosts
     hosts = None
+    # socket数据回调函数
     onMessage = None
+    # 进程开始回调
     onStart = None
+    # 协议
     protocol = None
+    # 初始化hosts
     def __init__(self,hosts):
         self.hosts = hosts
+    # 创建server socket
     def createServerSocket(self,data):
         host = data[0]
         port = data[1]
@@ -21,11 +29,12 @@ class server(object):
         s.bind((host, port))
         s.listen()
         return (s,(host,port))
+    # 开始
     def start(self):
         for i in range(1):
             p = Process(target=self.runProcess)
             p.start()
-
+    # 进程函数
     def runProcess(self):
         print('process run')
         self.hosts = list(map(self.createServerSocket, self.hosts))
@@ -33,13 +42,14 @@ class server(object):
         self.react = reactor()
         list(map(lambda d:self.react.addEvent(d[0],EVENT_READ,self.onAccpet),self.hosts))
         self.react.loop()
-
+    # 监视
     def monitor(self):
         pass
+    # socket accept 回调
     def onAccpet(self,s,args=None):
-        print('accept')
+        # print('accept')
         (clienctSocket,hostPort) = s.accept()
-        print(clienctSocket)
+        # print(clienctSocket)
         if clienctSocket:
             clienctSocket.setblocking(False)
             tcp = tcpCon(clienctSocket)
@@ -47,6 +57,6 @@ class server(object):
             tcp.protocol = self.protocol
             tcp.server = self
             self.react.addEvent(clienctSocket,EVENT_READ,tcp.onRead)
-
+    # 错误捕获函数
     def errorShow(self):
         pass

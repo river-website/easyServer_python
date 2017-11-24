@@ -4,12 +4,15 @@
 #   暂时同时仅支持单一服务如：web服务或websocket服务等等
 from server.webServer import *
 from time import *
+
+# 入口类
 class easy(object):
-    def __init__(self):
-        pass
+    # 开始
     def start(self,server,serverData):
+        # 后台
         def backGround():
             return
+        # 开始一种服务：如webserver，websocketserver
         def startOneServer(serverName,data):
             server = globals()[serverName](data)
             server.start()
@@ -17,6 +20,7 @@ class easy(object):
         backGround()
         startOneServer(server,serverData)
         self.monitor()
+    # 监视所有的server
     def monitor(self):
         sleep(1000)
     def getPids(self):

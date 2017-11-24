@@ -1,10 +1,11 @@
 from time import *
 import re
 
+# http解析类
 class http(object):
+    # 可接受的方式
     methods = ('GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS')
-    def __del__(self):
-        pass
+    # 解码函数
     def decode(self,data):
         def decode(connect):
             (key, value) = self.listToArgs(connect.split(':', 1), 2)
@@ -16,11 +17,12 @@ class http(object):
         del(dd[0])
         list(map(decode,list(filter(lambda conent: conent!='',dd))))
         return ret
+    # 加密函数
     def encode(self,content):
         header = 'HTTP/1.1 200 OK\r\n'
         header += 'Server: easy server\r\nContent-Length: '+ str(len(content)) +'\r\n\r\n'
         return  header+content
-
+    # 参数转化
     def listToArgs(self,ary, num):
         lens = len(ary)
         f = lens - num
@@ -31,6 +33,7 @@ class http(object):
             for i in range(-f):
                 ary.append('')
         return ary if num > 1 else ary[0]
+    # 获取报文基础信息，size
     def getInfo(self,con,data):
         (header) = self.listToArgs(data.split('\r\n\r\n',1),1)
         (METHOD) = self.listToArgs(header.split(' ', 1), 1)
@@ -39,6 +42,7 @@ class http(object):
         else:
             con.send('HTTP/1.1 400 Bad Request\r\n\r\n')
             return 0
+    # 获取size
     def getSize(self,header,method):
         if method == 'GET' or method == 'HEAD' or method == 'OPTIONS':
             return len(header)+4
@@ -47,6 +51,7 @@ class http(object):
         matcher1 = re.search(pattern1, header)  # 在源文本中搜索符合正则表达式的部分
         content_length = matcher1.group(0)  # 打印出来
         return content_length + len(header) + 4
+# 解码后的类
 class httpData(object):
     QUERY_STRING = ''
     REQUEST_METHOD = ''
