@@ -1,31 +1,16 @@
-from threading import *
-from time import *
-k = Lock()
+import tornado.ioloop
+import tornado.web
 
-def a():
-    global k
-    print(k)
-    k.acquire()
-    print(k)
-    print('get k1')
-    sleep(5)
-    print('get k2')
-    k.release()
-    print(k)
-def b():
-    global k
-    print(k)
-    k.release()
-    print(k)
-    k.release()
-    print(k)
-    k.acquire()
-    print(k)
-    print('put k1')
-print('start')
-t=Thread(target=a)
-t.setDaemon(True)
-t.start()
-sleep(1)
-b()
-sleep(10)
+
+class MainHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.write("Hello, world")
+
+
+application = tornado.web.Application([
+    (r"/", MainHandler),
+])
+
+if __name__ == "__main__":
+    application.listen(88)
+    tornado.ioloop.IOLoop.instance().start()  
