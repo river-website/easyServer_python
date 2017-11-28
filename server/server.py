@@ -24,16 +24,15 @@ class server(object):
         host = data[0]
         port = data[1]
         s = socket(AF_INET, SOCK_STREAM)
-        s.setblocking(False)
         s.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)  # 端口复用的关键点
+        s.setblocking(0)
         s.bind((host, port))
         s.listen()
         return (s,(host,port))
     # 开始
     def start(self):
-        for i in range(1):
-            p = Process(target=self.runProcess)
-            p.start()
+        list(map(lambda x:Process(target=self.runProcess).start(),range(1)))
+
     # 进程函数
     def runProcess(self):
         print('process run')
@@ -51,7 +50,7 @@ class server(object):
         (clienctSocket,hostPort) = s.accept()
         # print(clienctSocket)
         if clienctSocket:
-            clienctSocket.setblocking(False)
+            clienctSocket.setblocking(0)
             tcp = tcpCon(clienctSocket)
             tcp.onMessage = self.onMessage
             tcp.protocol = self.protocol

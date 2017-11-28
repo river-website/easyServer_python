@@ -26,7 +26,7 @@ class webServer(object):
     def onStart(self):
         self.protocol = http()
         self.server.protocol = self.protocol
-        self.tPools = threadPool(100)
+        self.tPools = threadPool(10)
     # web启动
     def start(self):
         self.server.onMessage = self.onMessage
@@ -42,3 +42,4 @@ class webServer(object):
     # tcp收到数据回调
     def onMessage(self,con,data):
         self.tPools.addEvent(self.work,(con,data))
+        # self.work((con,data))

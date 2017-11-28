@@ -10,9 +10,9 @@ if __name__ == '__main__':
     # 一种协议服务，多个host数据
     serverData[hostIP] = hostData
 
-    hostData = 'data'
-    hostIP = ('0.0.0.0',99)
-    serverData[hostIP] = hostData
+    # hostData = 'data'
+    # hostIP = ('0.0.0.0',99)
+    # serverData[hostIP] = hostData
     servers['webServer'] = serverData
 
     # serverData = dict()

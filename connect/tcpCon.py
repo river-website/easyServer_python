@@ -20,22 +20,28 @@ class tcpCon(object):
         self.clientSocket = clientSocket
     # 数据到达
     def onRead(self,s,args=None):
-        buffer = self.clientSocket.recv(8192)
-        if buffer:
-            buffer = bytes.decode(buffer)
-            if self.protocol:
-                if self.currentLen:
-                    self.currentLen = self.protocol.getInfo(self,buffer)
-                self.readBuffer += buffer
-                if len(self.readBuffer) < self.currentLen:
-                    return
-                else:
-                    dData = self.protocol.decode(self.readBuffer)
-                    self.onMessage(self, dData)
-            else:
-                self.onMessage(self,buffer)
-        else:
+        try:
+            buffer = self.clientSocket.recv(65536)
+        except ConnectionError as e:
+            print('read error:'+str(self.clientSocket)+e.strerror)
             self.close()
+            return
+        if not buffer:
+            print('read None:' + str(self.clientSocket))
+            self.close()
+            return
+        buffer = bytes.decode(buffer)
+        if self.protocol:
+            if self.currentLen:
+                self.currentLen = self.protocol.getInfo(self,buffer)
+            self.readBuffer += buffer
+            if len(self.readBuffer) < self.currentLen:
+                return
+            else:
+                dData = self.protocol.decode(self.readBuffer)
+                self.onMessage(self, dData)
+        else:
+            self.onMessage(self,buffer)
     # 写准备好
     def onWrite(self):
         pass
