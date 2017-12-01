@@ -26,13 +26,21 @@ class webServer(object):
     def onStart(self):
         self.protocol = http()
         self.server.protocol = self.protocol
-        self.tPools = threadPool(10)
+        self.tPools = threadPool(100)
     # web启动
     def start(self):
         self.server.onMessage = self.onMessage
         self.server.start()
     # 业务逻辑
     def buss(self,arg):
+        # sleep(1)
+        # sleep(0.001)
+        a=0
+        for i in range(1000):
+           a=i+1
+        # a=0
+        # for i in range(1000000):
+        #    a=i+1
         return 'hello world!'
     # 线程函数
     def work(self,arg):

@@ -1,54 +1,90 @@
 import selectors
 from threading import *
-#     select.EPOLLIN    可读事件
-# 　　select.EPOLLOUT   可写事件
-# 　　select.EPOLLERR   错误事件
-# 　　select.EPOLLHUP   客户端断开事件
+import sys
 
 # 读写
 EVENT_READ = (1 << 0)
 EVENT_WRITE = (1 << 1)
 
-# windows or Linux
-if hasattr(selectors, 'EPollSelector'):
-    _ServerSelector = selectors.EPollSelector
-elif hasattr(selectors, 'PollSelector'):
-    _ServerSelector = selectors.PollSelector
-else:
-    _ServerSelector = selectors.SelectSelector
-
 # reactor类
 class reactor(object):
     # epoll
     epoll = None
-    # 所有的事件
-    allEvent = dict()
     # 锁
-    eventLock = Lock()
+    eventLock = None
+    # 数量锁
+    maxLock = None
+    # 最大数量
+    max = 500
     # 初始化
-    def __init__(self):
+    def __init__(self,lock = True):
+        # windows or Linux
+        if hasattr(selectors, 'EPollSelector'):
+            _ServerSelector = selectors.EPollSelector
+        elif hasattr(selectors, 'PollSelector'):
+            _ServerSelector = selectors.PollSelector
+        else:
+            _ServerSelector = selectors.SelectSelector
+            if sys.platform == 'win32':
+                # 如果使用select模式，并且是Windows系统，需要设置最大数量锁
+                self.maxLock = Lock()
         self.epoll = _ServerSelector()
-        self.allEvent[EVENT_READ] = dict()
-        self.allEvent[EVENT_WRITE] = dict()
-    # 新增事件
+        if lock:
+            self.eventLock = Lock()
+    # 获取锁
+    def acquire(self):
+        if self.eventLock:
+            self.eventLock.acquire()
+    # 释放锁
+    def release(self):
+        if self.eventLock:
+            self.eventLock.release()
+    #  设置当前队列已经最大
+    def setMax(self):
+        if self.maxLock:
+            self.maxLock.acquire()
+    # 设置当前队列不是最大
+    def setNotMax(self):
+        if self.maxLock:
+            self.maxLock.release()
+    # 等待不为最大
+    def notMax(self):
+        if self.maxLock:
+            self.maxLock.acquire()
+    # 判断当前是否达到最大
+    def jugeMax(self):
+        if self.maxLock:
+            rLen = len(self.epoll._readers)
+            wLen = len(self.epoll._writers)
+            if rLen+wLen == self.max:
+                self.setNotMax()
+    # 判断当前是否小于最大
+    def jugeNotMax(self):
+        if self.maxLock:
+            rLen = len(self.epoll._readers)
+            wLen = len(self.epoll._writers)
+            if rLen + wLen < self.max:
+                self.setNotMax()
+      # 新增事件
     def addEvent(self,fd,status,func,args=None):
-        self.eventLock.acquire()
-        self.epoll.register(fd,status)
-        self.allEvent[status][fd.fileno()] = (func,args)
-        self.eventLock.release()
+        self.notMax()
+        self.acquire()
+        self.epoll.register(fd,status,(func,args))
+        self.jugeNotMax()
+        self.release()
     # 删除事件
     def delEvent(self,fd,status):
-        self.eventLock.acquire()
-        del(self.allEvent[status][fd.fileno()])
+        self.acquire()
+        self.jugeMax()
         self.epoll.unregister(fd)
-        self.eventLock.release()
+        self.release()
 
     # 循环loop
     def loop(self):
         while True:
             ready = self.epoll.select()
-            for k,e in ready:
-                funcs = self.allEvent[e][k.fd]
-                func = funcs[0]
-                args = funcs[1]
-                func(k.fileobj,args)
+            for selectorKey,status in ready:
+                func = selectorKey.data[0]
+                args = selectorKey.data[1]
+                print('call back func')
+                func(selectorKey.fileobj,args)
