@@ -50,8 +50,9 @@ class tcpCon(object):
         if self.protocol:
             data = self.protocol.encode(data)
         self.clientSocket.send(bytearray(data,'utf-8'))
-        # self.close()
     # 关闭
-    def close(self):
+    def close(self,data = None):
+        if data:
+            self.send(data)
         self.server.react.delEvent(self.clientSocket, EVENT_READ)
         self.clientSocket.close()
