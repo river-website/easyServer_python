@@ -1,3 +1,13 @@
+# webserver tcpcon http  抽象工厂
+# react                 工厂方法
+# webserver server react threadpool easy http  单例模式
+# server react tcpcon； webserver server pool  外观模式
+# tcpcon        状态模式
+# tcpcon        模板模式
+# http          策略模式
+
+
+
 #   python
 #   多进程 单i/o线程  多业务线程
 #   支持同一协议多端口
