@@ -2,6 +2,7 @@ from protocol.http import *
 from server.server import *
 from pool.threadPool import *
 from connect.tcpCon import *
+from globals.globalMap import *
 from server.core import *
 
 class serverAF(Singleton):
@@ -26,6 +27,8 @@ class webServer1(Singleton):
     tPools = None
     # web数据
     webData = None
+    # 线程数
+    threadCount=0
     # 设置web数据，创建server
     def __init__(self,serverData):
         self.server = server(self.initData(serverData))
@@ -37,30 +40,40 @@ class webServer1(Singleton):
         return list(serverData.keys())
     # 进程启动时运行
     def onStart(self):
+        conf = globalMap().getConf()
+        self.threadCount = conf['threadCount']
         self.protocol = http()
         self.server.protocol = self.protocol
-        self.tPools = threadPool(100)
+        if self.threadCount:
+            self.tPools = threadPool(self.threadCount)
     # web启动
     def start(self):
         self.server.onMessage = self.onMessage
         self.server.start()
     # 业务逻辑
     def buss(self,arg):
-        # sleep(1)
-        # sleep(0.001)
-        a=0
-        for i in range(1000):
-           a=i+1
-        # a=0
-        # for i in range(1000000):
-        #    a=i+1
-        return 'hello world!'
+        # # i/o 小
+        # time.sleep(0.01)
+        # # i/o 大
+        # time.sleep(1)
+        # # cpu 小
+        # for i in range(1000):
+        #     a = (i * 4 - 9) / 3
+        # # cpu 大
+        # for i in range(100000):
+        #     a = (i * 4 - 9) / 3
+        return "Hello, world"
     # 线程函数
     def work(self,arg):
         con = arg[0]
         ret = self.buss(arg[1])
-        con.send(ret)
+        if arg[1].HTTP_CONNECTION.lower() == 'Keep-Alive'.lower():
+            con.send(ret)
+        else:
+            con.close(ret)
     # tcp收到数据回调
     def onMessage(self,con,data):
-        self.tPools.addEvent(self.work,(con,data))
-        # self.work((con,data))
+        if self.threadCount:
+            self.tPools.addEvent(self.work,(con,data))
+        else:
+            self.work((con,data))
