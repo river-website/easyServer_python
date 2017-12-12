@@ -2,9 +2,22 @@ from protocol.http import *
 from server.server import *
 from pool.threadPool import *
 from connect.tcpCon import *
+from server.core import *
+
+class serverAF(Singleton):
+    def createProtocol(self):
+        pass
+    def createConect(self):
+        pass
+class webServer(serverAF):
+    def createConect(self):
+        return "tcp"
+    def createProtocol(self):
+        return http()
+
 
 # web服务
-class webServer(object):
+class webServer1(Singleton):
     # 协议如：http
     protocol = None
     # server实体

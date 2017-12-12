@@ -1,4 +1,5 @@
 from threading import *
+from server.core import *
 
 # 队列类
 class queue(object):
@@ -52,7 +53,7 @@ class queue(object):
         self.queue.append(item)
         self.release()
 # 线程池类
-class threadPool(object):
+class threadPool(Singleton):
     # 线程池
     tPpools = []
     # 事件队列

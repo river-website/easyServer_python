@@ -3,9 +3,10 @@ from socket import *
 from react.react import *
 from connect.tcpCon import *
 from multiprocessing import *
+from server.core import *
 
 # 服务类
-class server(object):
+class server(Singleton):
     # reactor实体，每个进程一个
     react = None
     # 监听的hosts

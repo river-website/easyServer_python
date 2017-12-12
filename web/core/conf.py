@@ -1,0 +1,2 @@
+class conf(object):
+    pass

@@ -1,8 +1,9 @@
 from time import *
 import re
+from server.core import *
 
 # http解析类
-class http(object):
+class http(Singleton):
     # 可接受的方式
     methods = ('GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS')
     # 解码函数

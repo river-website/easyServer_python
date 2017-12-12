@@ -1,0 +1,2 @@
+class hook(object):
+    pass

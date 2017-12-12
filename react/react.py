@@ -1,13 +1,14 @@
 import selectors
 from threading import *
 import sys
+from server.core import *
 
 # 读写
 EVENT_READ = (1 << 0)
 EVENT_WRITE = (1 << 1)
 
 # reactor类
-class reactor(object):
+class reactor(Singleton):
     # epoll
     epoll = None
     # 锁

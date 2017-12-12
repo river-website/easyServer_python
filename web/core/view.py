@@ -1,0 +1,2 @@
+class view(object):
+    pass
