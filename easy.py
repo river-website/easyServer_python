@@ -1,10 +1,14 @@
-# webserver server react threadpool easy http  单例模式
-# webserver tcpcon http  抽象工厂
-# react                 工厂方法
-# server react tcpcon； webserver server pool  外观模式
-# tcpcon        状态模式
-# tcpcon        模板模式
-# http          策略模式
+# webserver server react threadpool easy http  单例模式             ok
+# webserver tcpcon http     抽象工厂                                no
+# react connect protocol    工厂方法                                ok
+# server react tcpcon； webserver server pool  外观模式             ok,ok
+# tcpcon        状态模式                                            ok
+# tcpcon        模板模式                                            no
+# http          策略模式                                            ok
+
+# 主线程：      实际操作，其他线程可提交事件：reactor.loop  accept read write decode encode  再循环中fd有变化可以等到通知
+# reactor线程： reactor add or del     实际执行，其他可以提交
+# 100业务线程： 只处理原始数据，return 原始数据
 
 from server.core import *
 from server.webServer import *
